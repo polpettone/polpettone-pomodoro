@@ -21,7 +21,9 @@ func StartCmd() *cobra.Command {
 }
 
 func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error) {
-	return "start pomodoro session", nil
+
+	msg, err := startSession()
+	return msg, err
 }
 
 func init() {
