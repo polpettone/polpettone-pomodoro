@@ -21,8 +21,10 @@ func StartCmd() *cobra.Command {
 }
 
 func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error) {
+	engine := Engine{}
+	engine.Setup()
 
-	msg, err := startSession()
+	msg, err := engine.StartSession()
 	return msg, err
 }
 

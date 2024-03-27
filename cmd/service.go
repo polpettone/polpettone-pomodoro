@@ -2,20 +2,20 @@ package commands
 
 import (
 	"fmt"
+	"os/exec"
 	"time"
 )
 
-func startSession() (string, error) {
-	pomodoroTimer()
-	return "started session", nil
+type Engine struct {
 }
 
-func pomodoroTimer() {
+func (e Engine) Setup() {
+	setupShellSettings()
+}
+
+func (e Engine) StartSession() (string, error) {
 	runTimer(10*time.Second, "Session 1")
-}
-
-func waitForEnter() {
-	fmt.Scanln() // Wartet auf Benutzereingabe (Enter)
+	return "started session", nil
 }
 
 func runTimer(duration time.Duration, description string) {
@@ -24,7 +24,7 @@ func runTimer(duration time.Duration, description string) {
 		elapsed := time.Since(startTime)
 		fmt.Printf("Elapsed: %s", fmtDuration(elapsed))
 		time.Sleep(time.Second)
-		ClearScreen()
+		clearScreen()
 		if elapsed >= duration {
 			fmt.Println("Timer Stopped")
 			break
@@ -39,27 +39,17 @@ func fmtDuration(d time.Duration) string {
 	return fmt.Sprintf("%02d:%02d:%02d\n", hour, minute, second) // 02:09:37
 }
 
-func manage() {
-	shortBreakDuration := 5 * time.Minute
-	longBreakDuration := 15 * time.Minute
-	pomodoroCount := 0
-	for {
-		fmt.Printf("Pomodoro %d\n", pomodoroCount+1)
-		fmt.Println("Arbeitet für 25 Minuten... (Drücke Enter, um zu pausieren)")
-		waitForEnter()
-		if pomodoroCount%4 == 3 {
-			fmt.Println("Lange Pause für 15 Minuten... (Drücke Enter, um zu pausieren)")
-			waitForEnter()
-			runTimer(longBreakDuration, "long break")
-		} else {
-			fmt.Println("Kurze Pause für 5 Minuten... (Drücke Enter, um zu pausieren)")
-			waitForEnter()
-			runTimer(shortBreakDuration, "short break")
-		}
-		pomodoroCount++
-	}
+func clearScreen() {
+	fmt.Print("\033[H\033[2J")
 }
 
-func ClearScreen() {
-	fmt.Print("\033[H\033[2J")
+func setupShellSettings() {
+	// disable input buffering
+	exec.Command("stty", "-F", "/dev/tty", "cbreak", "min", "1").Run()
+	// do not display entered characters on the screen
+	exec.Command("stty", "-F", "/dev/tty", "-echo").Run()
+}
+
+func waitForEnter() {
+	fmt.Scanln() // Wartet auf Benutzereingabe (Enter)
 }
