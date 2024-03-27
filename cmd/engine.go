@@ -3,31 +3,41 @@ package commands
 import (
 	"fmt"
 	"os/exec"
+	"sync"
 	"time"
 )
 
 type Engine struct {
+	KeyChannel chan string
 }
 
 func (e Engine) Setup() {
 	setupShellSettings()
+	e.KeyChannel = make(chan string, 1)
 }
 
 func (e Engine) StartSession() (string, error) {
-	runTimer(10*time.Second, "Session 1")
-	return "started session", nil
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	go runTimer(3*time.Second, "Session 1", wg)
+	wg.Wait()
+	return "Finished", nil
 }
 
-func runTimer(duration time.Duration, description string) {
+func runTimer(duration time.Duration, description string, wg *sync.WaitGroup) {
+	defer wg.Done()
 	startTime := time.Now()
 	for {
-		elapsed := time.Since(startTime)
-		fmt.Printf("Elapsed: %s", fmtDuration(elapsed))
-		time.Sleep(time.Second)
-		clearScreen()
-		if elapsed >= duration {
-			fmt.Println("Timer Stopped")
-			break
+		select {
+		default:
+			elapsed := time.Since(startTime)
+			fmt.Printf("Elapsed: %s", fmtDuration(elapsed))
+			time.Sleep(time.Second)
+			clearScreen()
+			if elapsed >= duration {
+				fmt.Println("Timer Stopped")
+				return
+			}
 		}
 	}
 }
