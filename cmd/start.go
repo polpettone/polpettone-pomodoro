@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +25,7 @@ func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error)
 	engine := Engine{}
 	engine.Setup()
 
-	msg, err := engine.StartSession()
+	msg, err := engine.StartSimpleSession(5*time.Minute, "no description")
 	return msg, err
 }
 

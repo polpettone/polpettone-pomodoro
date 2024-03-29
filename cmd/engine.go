@@ -20,6 +20,22 @@ func (e Engine) Setup() {
 	e.DoneChannel = make(chan struct{})
 }
 
+func (e Engine) StartSimpleSession(duration time.Duration, description string) (string, error) {
+	startTime := time.Now()
+	Log.Stdout.Printf("Start Session: %s\n", description)
+	for {
+		elapsed := time.Since(startTime)
+		Log.Stdout.Printf("session is running: \n %s - %s\n", description, fmtDuration(duration))
+		Log.Stdout.Printf("elapsed: %s", fmtDuration(elapsed))
+		time.Sleep(time.Second)
+		clearScreen()
+		if elapsed >= duration {
+			Log.Stdout.Println("Timer Stopped")
+			return "finished", nil
+		}
+	}
+}
+
 func (e Engine) StartSession() (string, error) {
 	Log.DebugLog.Printf("Start Session\n")
 	wg := new(sync.WaitGroup)
