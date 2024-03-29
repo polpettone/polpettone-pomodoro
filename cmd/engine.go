@@ -31,6 +31,8 @@ func (e Engine) StartSimpleSession(duration time.Duration, description string) (
 		clearScreen()
 		if elapsed >= duration {
 			Log.Stdout.Println("Timer Stopped")
+			command := exec.Command("i3lock")
+			command.Run()
 			return "finished", nil
 		}
 	}

@@ -33,7 +33,7 @@ func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error)
 		return err.Error(), err
 	}
 
-	msg, err := engine.StartSimpleSession(time.Duration(durationInMinutes)*time.Minute, description)
+	msg, err := engine.StartSimpleSession(time.Duration(durationInMinutes)*time.Second, description)
 	return msg, err
 }
 
