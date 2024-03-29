@@ -25,11 +25,34 @@ func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error)
 	engine := Engine{}
 	engine.Setup()
 
-	msg, err := engine.StartSimpleSession(5*time.Minute, "no description")
+	durationInMinutes, err := cobraCommand.Flags().GetInt("duration")
+	description, err := cobraCommand.Flags().GetString("description")
+
+	if err != nil {
+		Log.ErrorLog.Printf("%s", err)
+		return err.Error(), err
+	}
+
+	msg, err := engine.StartSimpleSession(time.Duration(durationInMinutes)*time.Minute, description)
 	return msg, err
 }
 
 func init() {
 	startCmd := StartCmd()
 	rootCmd.AddCommand(startCmd)
+
+	startCmd.Flags().IntP(
+		"duration",
+		"t",
+		5,
+		"duration in minutes",
+	)
+
+	startCmd.Flags().StringP(
+		"description",
+		"d",
+		"no description",
+		"description of this session",
+	)
+
 }
