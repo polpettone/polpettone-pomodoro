@@ -13,6 +13,16 @@ type Engine struct {
 	DoneChannel chan struct{}
 }
 
+type Session struct {
+	Description string
+	Duration    time.Duration
+	Start       time.Time
+}
+
+func (s Session) ToString() string {
+	return fmt.Sprintf("%s %s %s", s.Start, fmtDuration(s.Duration), s.Description)
+}
+
 func (e Engine) Setup() {
 	Log.DebugLog.Printf("Setup Engine \n")
 	setupShellSettings()
@@ -22,10 +32,19 @@ func (e Engine) Setup() {
 
 func (e Engine) StartSimpleSession(duration time.Duration, description string) (string, error) {
 	startTime := time.Now()
-	Log.Stdout.Printf("Start Session: %s\n", description)
+
+	session := Session{
+		Description: description,
+		Duration:    duration,
+		Start:       startTime,
+	}
+
+	Log.Stdout.Printf("Start Session: %s\n", session.ToString())
+	Log.SessionLog.Printf("%s\n", session.ToString())
+
 	for {
 		elapsed := time.Since(startTime)
-		Log.Stdout.Printf("session is running: \n %s - %s\n", description, fmtDuration(duration))
+		Log.Stdout.Printf("session is running: \n %s\n", session.ToString())
 		Log.Stdout.Printf("elapsed: %s", fmtDuration(elapsed))
 		time.Sleep(time.Second)
 		clearScreen()
@@ -123,7 +142,7 @@ func fmtDuration(d time.Duration) string {
 	hour := int(d.Hours())
 	minute := int(d.Minutes()) % 60
 	second := int(d.Seconds()) % 60
-	return fmt.Sprintf("%02d:%02d:%02d\n", hour, minute, second) // 02:09:37
+	return fmt.Sprintf("%02d:%02d:%02d", hour, minute, second) // 02:09:37
 }
 
 func clearScreen() {

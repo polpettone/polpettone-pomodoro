@@ -12,10 +12,11 @@ func init() {
 var Log Logging
 
 type Logging struct {
-	Stdout   *log.Logger
-	ErrorLog *log.Logger
-	InfoLog  *log.Logger
-	DebugLog *log.Logger
+	Stdout     *log.Logger
+	ErrorLog   *log.Logger
+	InfoLog    *log.Logger
+	DebugLog   *log.Logger
+	SessionLog *log.Logger
 }
 
 func openLogFile(path string) *os.File {
@@ -31,12 +32,14 @@ func NewLogging() *Logging {
 	infoLog := log.New(openLogFile("info.log"), "INFO\t", log.Ldate|log.Ltime|log.Lshortfile)
 	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	debugLog := log.New(openLogFile("debug.log"), "DEBUG\t", log.Ldate|log.Ltime|log.Lshortfile)
+	sessionLog := log.New(openLogFile("session.log"), "\t", 0)
 
 	app := &Logging{
-		Stdout:   stdout,
-		ErrorLog: errorLog,
-		InfoLog:  infoLog,
-		DebugLog: debugLog,
+		Stdout:     stdout,
+		ErrorLog:   errorLog,
+		InfoLog:    infoLog,
+		DebugLog:   debugLog,
+		SessionLog: sessionLog,
 	}
 
 	return app
