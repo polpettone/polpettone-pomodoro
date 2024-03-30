@@ -7,8 +7,6 @@ import (
 )
 
 type Engine struct {
-	KeyChannel  chan string
-	DoneChannel chan struct{}
 }
 
 type Session struct {
@@ -24,8 +22,6 @@ func (s Session) ToString() string {
 func (e Engine) Setup() {
 	Log.DebugLog.Printf("Setup Engine \n")
 	setupShellSettings()
-	e.KeyChannel = make(chan string, 1)
-	e.DoneChannel = make(chan struct{})
 }
 
 func (e Engine) StartSession(duration time.Duration, description string) (string, error) {
