@@ -27,13 +27,17 @@ func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error)
 
 	durationInMinutes, err := cobraCommand.Flags().GetInt("duration")
 	description, err := cobraCommand.Flags().GetString("description")
+	finishCommand, err := cobraCommand.Flags().GetString("finishCommand")
 
 	if err != nil {
 		Log.ErrorLog.Printf("%s", err)
 		return err.Error(), err
 	}
 
-	msg, err := engine.StartSession(time.Duration(durationInMinutes)*time.Minute, description)
+	msg, err := engine.StartSession(
+		time.Duration(durationInMinutes)*time.Minute,
+		description,
+		finishCommand)
 	return msg, err
 }
 
@@ -53,6 +57,13 @@ func init() {
 		"d",
 		"no description",
 		"description of this session",
+	)
+
+	startCmd.Flags().StringP(
+		"finishCommand",
+		"f",
+		"i3lock",
+		"command to execute when session finished",
 	)
 
 }

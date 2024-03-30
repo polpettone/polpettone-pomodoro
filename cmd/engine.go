@@ -24,7 +24,7 @@ func (e Engine) Setup() {
 	setupShellSettings()
 }
 
-func (e Engine) StartSession(duration time.Duration, description string) (string, error) {
+func (e Engine) StartSession(duration time.Duration, description string, finishCommand string) (string, error) {
 	startTime := time.Now()
 
 	session := Session{
@@ -39,12 +39,13 @@ func (e Engine) StartSession(duration time.Duration, description string) (string
 	for {
 		elapsed := time.Since(startTime)
 		Log.Stdout.Printf("session is running: \n %s\n", session.ToString())
+		Log.Stdout.Printf("finish command: %s\n", finishCommand)
 		Log.Stdout.Printf("elapsed: %s", fmtDuration(elapsed))
 		time.Sleep(time.Second)
 		clearScreen()
 		if elapsed >= duration {
 			Log.Stdout.Println("Timer Stopped")
-			command := exec.Command("i3lock")
+			command := exec.Command(finishCommand)
 			command.Run()
 			return "finished", nil
 		}
