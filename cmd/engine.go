@@ -7,21 +7,27 @@ import (
 )
 
 type Engine struct {
+	Repo Repo
 }
 
 type Session struct {
-	Description string
-	Duration    time.Duration
-	Start       time.Time
+	Description string        `json:"description"`
+	Duration    time.Duration `json:"duration"`
+	Start       time.Time     `json:"start"`
 }
 
 func (s Session) ToString() string {
 	return fmt.Sprintf("%s %s %s", s.Start.Format("2006-01-02 15:04:05"), fmtDuration(s.Duration), s.Description)
 }
 
-func (e Engine) Setup() {
-	Log.DebugLog.Printf("Setup Engine \n")
+func (e *Engine) Setup() {
 	setupShellSettings()
+	repo := Repo{
+		Path: "./sessions.json",
+	}
+	e.Repo = repo
+
+	Log.DebugLog.Printf("Setup Engine %v\n", e)
 }
 
 func (e Engine) StartSession(duration time.Duration, description string, finishCommand string) (string, error) {
@@ -35,6 +41,7 @@ func (e Engine) StartSession(duration time.Duration, description string, finishC
 
 	Log.Stdout.Printf("Start Session: %s\n", session.ToString())
 	Log.SessionLog.Printf("%s\n", session.ToString())
+	e.Repo.Save(session)
 
 	for {
 		elapsed := time.Since(startTime)

@@ -22,7 +22,7 @@ type Logging struct {
 func openLogFile(path string) *os.File {
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
-		log.Fatalf("error opening file: %v", err)
+		log.Fatalf("error opening file:%s,  %v", path, err)
 	}
 	return f
 }
@@ -30,7 +30,7 @@ func openLogFile(path string) *os.File {
 func NewLogging() *Logging {
 	stdout := log.New(os.Stdout, "", 0)
 	infoLog := log.New(openLogFile("info.log"), "INFO\t", log.Ldate|log.Ltime|log.Lshortfile)
-	errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	errorLog := log.New(openLogFile("error.log"), "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 	debugLog := log.New(openLogFile("debug.log"), "DEBUG\t", log.Ldate|log.Ltime|log.Lshortfile)
 	sessionLog := log.New(openLogFile("session.log"), "\t", 0)
 
