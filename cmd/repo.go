@@ -56,6 +56,7 @@ func (repo Repo) Load() ([]Session, error) {
 
 	return sessions, nil
 }
+
 func openFile(path string) (*os.File, error) {
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
 	if err != nil {
