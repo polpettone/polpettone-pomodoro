@@ -22,7 +22,7 @@ func (s Session) ToString() string {
 }
 
 func (s Session) ToMarkdownTableRow() string {
-	return fmt.Sprintf("|%s| %s| %s|\n", s.Start.Format("2006-01-02 15:04:05"), fmtDuration(s.Duration), s.Description)
+	return fmt.Sprintf("|%s| %s| %s| %s|\n", s.Start.Format("2006-01-02 15:04:05"), fmtDuration(s.Duration), s.Description, "")
 }
 
 func (e *Engine) Setup() {
@@ -42,8 +42,8 @@ func (e *Engine) ExportToMDTable(path string) error {
 		return err
 	}
 
-	tableHeader0 := fmt.Sprintf("|Start|Dauer|Beschreibung|")
-	tableHeader1 := fmt.Sprintf("|-----|-----|------|")
+	tableHeader0 := fmt.Sprintf("|Start|Dauer|Beschreibung|Anmerkungen|")
+	tableHeader1 := fmt.Sprintf("|-----|-----|------|------|")
 
 	body := ""
 	for _, s := range sessions {
