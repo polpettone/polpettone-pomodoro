@@ -18,11 +18,11 @@ type Session struct {
 }
 
 func (s Session) ToString() string {
-	return fmt.Sprintf("%s %s %s", s.Start.Format("2006-01-02 15:04:05"), fmtDuration(s.Duration), s.Description)
+	return fmt.Sprintf("%s %s %s", s.Start.Format("2006-01-02 15:04:05"), fmtDurationSecondsMinutes(s.Duration), s.Description)
 }
 
 func (s Session) ToMarkdownTableRow() string {
-	return fmt.Sprintf("|%s| %s| %s| %s|\n", s.Start.Format("2006-01-02 15:04:05"), fmtDuration(s.Duration), s.Description, "")
+	return fmt.Sprintf("|%s| %s| %s| %s|\n", s.Start.Format("2006-01-02 15:04:05"), fmtDurationMinutesHourse(s.Duration), s.Description, "")
 }
 
 func (e *Engine) Setup() {
@@ -78,7 +78,7 @@ func (e Engine) StartSession(duration time.Duration, description string, finishC
 		elapsed := time.Since(startTime)
 		Log.Stdout.Printf("session is running: \n %s\n", session.ToString())
 		Log.Stdout.Printf("finish command: %s\n", finishCommand)
-		Log.Stdout.Printf("elapsed: %s", fmtDuration(elapsed))
+		Log.Stdout.Printf("elapsed: %s", fmtDurationSecondsMinutes(elapsed))
 		time.Sleep(time.Second)
 		clearScreen()
 		if elapsed >= duration {
@@ -90,10 +90,16 @@ func (e Engine) StartSession(duration time.Duration, description string, finishC
 	}
 }
 
-func fmtDuration(d time.Duration) string {
+func fmtDurationMinutesHourse(d time.Duration) string {
 	hours := int(d.Hours()) % 60
 	minute := int(d.Minutes()) % 60
 	return fmt.Sprintf("%02d:%02d", hours, minute)
+}
+
+func fmtDurationSecondsMinutes(d time.Duration) string {
+	seconds := int(d.Seconds()) % 60
+	minute := int(d.Minutes()) % 60
+	return fmt.Sprintf("%02d:%02d", minute, seconds)
 }
 
 func clearScreen() {
