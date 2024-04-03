@@ -91,9 +91,9 @@ func (e Engine) StartSession(duration time.Duration, description string, finishC
 }
 
 func fmtDuration(d time.Duration) string {
+	hours := int(d.Hours()) % 60
 	minute := int(d.Minutes()) % 60
-	second := int(d.Seconds()) % 60
-	return fmt.Sprintf("%02d:%02d", minute, second) // 02:09:37
+	return fmt.Sprintf("%02d:%02d", hours, minute)
 }
 
 func clearScreen() {
