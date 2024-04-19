@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"os/signal"
 	"time"
 )
 
@@ -70,24 +71,56 @@ func (e Engine) StartSession(duration time.Duration, description string, finishC
 		Start:       startTime,
 	}
 
-	Log.Stdout.Printf("Start Session: %s\n", session.ToString())
+	Log.InfoLog.Printf("Start Session: %s\n", session.ToString())
 	Log.SessionLog.Printf("%s\n", session.ToString())
 	e.Repo.Save(session)
+
+	pomodoroStatusFile, err := getPomodoroStatusFile()
+	if err != nil {
+		return "", err
+	}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			Log.Stdout.Printf("%s received. Timer Stopped", sig)
+			os.WriteFile(pomodoroStatusFile, []byte("stopped"), 0644)
+			os.Exit(0)
+		}
+	}()
 
 	for {
 		elapsed := time.Since(startTime)
 		Log.Stdout.Printf("session is running: \n %s\n", session.ToString())
 		Log.Stdout.Printf("finish command: %s\n", finishCommand)
-		Log.Stdout.Printf("elapsed: %s", fmtDurationSecondsMinutes(elapsed))
+
+		elapsedOutput := fmt.Sprintf("%s: %s", description, fmtDurationSecondsMinutes(elapsed))
+		Log.Stdout.Printf(elapsedOutput)
+
+		os.WriteFile(pomodoroStatusFile, []byte(elapsedOutput), 0644)
+
 		time.Sleep(time.Second)
 		clearScreen()
 		if elapsed >= duration {
 			Log.Stdout.Println("Timer Stopped")
 			command := exec.Command(finishCommand)
-			command.Run()
+			err := command.Run()
+			if err != nil {
+				Log.ErrorLog.Print(err)
+			}
+			os.WriteFile(pomodoroStatusFile, []byte("stopped"), 0644)
 			return "finished", nil
 		}
 	}
+}
+
+func getPomodoroStatusFile() (string, error) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		return "", nil
+	}
+	return fmt.Sprintf("%s/pomodoro/pomodoro-status", homeDir), nil
 }
 
 func fmtDurationMinutesHourse(d time.Duration) string {

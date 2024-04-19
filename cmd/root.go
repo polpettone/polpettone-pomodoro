@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -25,8 +24,6 @@ func Execute() {
 }
 
 func init() {
-	log.Printf("init() \n")
-
 	viper.AutomaticEnv()
 	viper.ReadInConfig()
 
