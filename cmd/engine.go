@@ -36,18 +36,30 @@ func (e *Engine) Setup() {
 	Log.DebugLog.Printf("Setup Engine %v", e)
 }
 
-func (e *Engine) ExportToMDTable(path string) error {
+func equalDates(a, b time.Time) bool {
+	return a.Day() == b.Day() && a.Month() == b.Month() && a.Year() == b.Year()
+}
+
+func (e *Engine) ExportToMDTable(path string, date time.Time) error {
 
 	sessions, err := e.Repo.Load()
 	if err != nil {
 		return err
 	}
 
+	var sessionsForExport []Session
+
+	for _, s := range sessions {
+		if equalDates(s.Start, date) {
+			sessionsForExport = append(sessionsForExport, s)
+		}
+	}
+
 	tableHeader0 := fmt.Sprintf("|Start|Dauer|Beschreibung|Anmerkungen|")
 	tableHeader1 := fmt.Sprintf("|-----|-----|------|------|")
 
 	body := ""
-	for _, s := range sessions {
+	for _, s := range sessionsForExport {
 		body += fmt.Sprintf("%s", s.ToMarkdownTableRow())
 	}
 

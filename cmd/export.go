@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -28,7 +29,10 @@ func handlesExportCmd(cobraCommand *cobra.Command, args []string) (string, error
 	if err != nil {
 		return "", err
 	}
-	engine.ExportToMDTable(path)
+	err = engine.ExportToMDTable(path, time.Now())
+	if err != nil {
+		return "", err
+	}
 
 	return fmt.Sprintf("exported to %s", path), nil
 }
