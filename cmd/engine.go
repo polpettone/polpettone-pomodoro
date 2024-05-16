@@ -22,8 +22,8 @@ func (s Session) ToString() string {
 	return fmt.Sprintf("%s %s %s", s.Start.Format("2006-01-02 15:04:05"), fmtDurationSecondsMinutes(s.Duration), s.Description)
 }
 
-func (s Session) ToMarkdownTableRow() string {
-	return fmt.Sprintf("|%s| %s| %s| %s|\n", s.Start.Format("2006-01-02 15:04:05"), fmtDurationMinutesHourse(s.Duration), s.Description, "")
+func (s Session) ToMarkdownTableRow(count int) string {
+	return fmt.Sprintf("|%d |%s| %s| %s| %s|\n", count, s.Start.Format("2006-01-02 15:04:05"), fmtDurationMinutesHourse(s.Duration), s.Description, "")
 }
 
 func (e *Engine) Setup() {
@@ -55,12 +55,14 @@ func (e *Engine) ExportToMDTable(path string, date time.Time) error {
 		}
 	}
 
-	tableHeader0 := fmt.Sprintf("|Start|Dauer|Beschreibung|Anmerkungen|")
-	tableHeader1 := fmt.Sprintf("|-----|-----|------|------|")
+	tableHeader0 := fmt.Sprintf("|No|Start|Dauer|Beschreibung|Anmerkungen|")
+	tableHeader1 := fmt.Sprintf("|-----|-----|-----|------|------|")
+	tableFooter0 := fmt.Sprintf("||Total||------|------|")
+	tableFooter1 := fmt.Sprintf("<!-- TBLFM: @>$3=sum(@I..@-1);hm -->")
 
 	body := ""
-	for _, s := range sessionsForExport {
-		body += fmt.Sprintf("%s", s.ToMarkdownTableRow())
+	for n, s := range sessionsForExport {
+		body += fmt.Sprintf("%s", s.ToMarkdownTableRow(n+1))
 	}
 
 	f, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
@@ -68,7 +70,7 @@ func (e *Engine) ExportToMDTable(path string, date time.Time) error {
 		return err
 	}
 
-	table := fmt.Sprintf("\n\n%s\n%s\n%s\n", tableHeader0, tableHeader1, body)
+	table := fmt.Sprintf("\n\n%s\n%s\n%s%s\n%s\n", tableHeader0, tableHeader1, body, tableFooter0, tableFooter1)
 	f.WriteString(table)
 
 	return nil
