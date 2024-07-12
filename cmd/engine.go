@@ -26,10 +26,10 @@ func (s Session) ToMarkdownTableRow(count int) string {
 	return fmt.Sprintf("|%d |%s| %s| %s| %s|\n", count, s.Start.Format("2006-01-02 15:04:05"), fmtDurationMinutesHourse(s.Duration), s.Description, "")
 }
 
-func (e *Engine) Setup() {
+func (e *Engine) Setup(sessionsFile string) {
 	setupShellSettings()
 	repo := Repo{
-		Path: "./sessions.json",
+		Path: sessionsFile,
 	}
 	e.Repo = repo
 

@@ -23,7 +23,7 @@ func ExportCmd() *cobra.Command {
 
 func handlesExportCmd(cobraCommand *cobra.Command, args []string) (string, error) {
 	engine := Engine{}
-	engine.Setup()
+	engine.Setup("./sessions.json")
 
 	path, err := cobraCommand.Flags().GetString("path")
 	if err != nil {

@@ -23,7 +23,7 @@ func StartCmd() *cobra.Command {
 
 func handlesStartCmd(cobraCommand *cobra.Command, args []string) (string, error) {
 	engine := Engine{}
-	engine.Setup()
+	engine.Setup("./sessions.json")
 
 	durationInMinutes, err := cobraCommand.Flags().GetInt("duration")
 	description, err := cobraCommand.Flags().GetString("description")
